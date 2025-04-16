@@ -1,0 +1,33 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Robotics\\School roboticas\\WRO scoring system\\Blazor\\ScoringTablet\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ScoringTablet.bundle.scp.css",
+      "PackagePath": "staticwebassets\\ScoringTablet.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\Robotics\\School roboticas\\WRO scoring system\\Blazor\\ScoringTablet\\wwwroot\\css\\blazor-ui.css",
+      "PackagePath": "staticwebassets\\css\\blazor-ui.css"
+    },
+    {
+      "Id": "D:\\Robotics\\School roboticas\\WRO scoring system\\Blazor\\ScoringTablet\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ScoringTablet.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.ScoringTablet.props",
+      "PackagePath": "build\\ScoringTablet.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.ScoringTablet.props",
+      "PackagePath": "buildMultiTargeting\\ScoringTablet.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.ScoringTablet.props",
+      "PackagePath": "buildTransitive\\ScoringTablet.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

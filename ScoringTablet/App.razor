@@ -1,0 +1,246 @@
+﻿@page "/"
+@using ScoringTablet.Models
+@using ScoringTablet.Services
+@inject ScoringTablet.Services.MongoDB_Service<ScoringTablet.Models.ScoreEntry> MongoDBService
+
+
+
+
+
+<div id="backgroundBox">
+
+    <h1 style="text-align: center;" class="scorix-logo">Scorix</h1>
+
+    <div style="text-align: center;">
+        <div style="display: flex; justify-content: center; gap: 5px; margin-bottom: 20px;">
+            <select @onchange="TableSelect" class="dropdown2">
+                <option value="Table 1">Table 1</option>
+                <option value="Table 2">Table 2</option>
+            </select>
+            <input type="text" @bind="GameNumber" class="text-box" style="width: 350px;">
+        </div>
+    </div>
+
+
+
+    <div class="center-wrapper">
+        <div class="scoring-grid">
+            <div class="score-item">
+                <div class="floating-inputs">
+                    <input type="text" @bind="team1.Name" class="text-box floating-text">
+                    <p>      </p>
+                    <select @onchange="team1.OnSelectedOptionChanged" class="dropdown floating-dropdown">
+                        <option disabled selected value="">No Penalty</option>
+                        <option value="Start Position Violation">Start Position Violation (-10)</option>
+                        <option value="Robot Touch">Robot Touch (-30)</option>
+                        <option value="Field Damage">Field Damage (-30)</option>
+                        <option value="Game Interference">Game Interference (-50)</option>
+                    </select>
+                </div>
+
+                <h2 style="text-align: left">Score: @team1.Score</h2>
+
+                <h3 style="text-align: left">Orange Balls: @team1.OrangeBalls</h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <button class="score-button" @onclick="team1.IncreaseOrangeBalls">+1</button>
+                    <button class="score-button" @onclick="team1.DecreaseOrangeBalls">-1</button>
+                </div>
+
+                <p></p>
+
+                <h3 style="text-align: left">Purple Balls: @team1.PurpleBalls</h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <button class="penalty-button" @onclick="team1.IncreasePurpleBalls">+1</button>
+                    <button class="penalty-button" @onclick="team1.DecreasePurpleBalls">-1</button>
+                </div>
+
+                <p></p>
+            </div>
+
+            <div class="score-item">
+                <div class="floating-inputs">
+                    <input type="text" @bind="team2.Name" class="text-box floating-text">
+                    <p>        </p>
+                    <select @onchange="team2.OnSelectedOptionChanged" class="dropdown floating-dropdown">
+                        <option disabled selected value="">No Penalty</option>
+                        <option value="Start Position Violation">Start Position Violation (-10)</option>
+                        <option value="Robot Touch">Robot Touch (-30)</option>
+                        <option value="Field Damage">Field Damage (-30)</option>
+                        <option value="Game Interference">Game Interference (-50)</option>
+                    </select>
+                </div>
+
+                <h2 style="text-align: left">Score: @team2.Score</h2>
+
+                <h3 style="text-align: left">Orange Balls: @team2.OrangeBalls</h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <button class="score-button" @onclick="team2.IncreaseOrangeBalls">+1</button>
+                    <button class="score-button" @onclick="team2.DecreaseOrangeBalls">-1</button>
+                </div>
+
+                <p></p>
+
+                <h3 style="text-align: left">Purple Balls: @team2.PurpleBalls</h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <button class="penalty-button" @onclick="team2.IncreasePurpleBalls">+1</button>
+                    <button class="penalty-button" @onclick="team2.DecreasePurpleBalls">-1</button>
+                </div>
+
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <div style="text-align: center;">
+        <button class="save-button" @onclick="Submit">Save</button>
+        <button class="reset-button" @onclick="Reset">Reset</button>
+    </div>
+
+</div>
+
+
+
+@code {
+
+    public int SelectedTable { get; set; } = 0;
+
+    public string GameNumber { get; set; } = "";
+    public void TableSelect(ChangeEventArgs e)
+    {   
+        var value = e.Value?.ToString();
+
+        if (value == "Table 1")
+            SelectedTable = 1;
+        else if (value == "Table 2")
+            SelectedTable = 2;
+        else
+            SelectedTable = 0; 
+    }
+
+    public async Task Submit()
+    {
+        var game = new ScoreEntry
+        {
+            SelectedTable = SelectedTable,
+            GameNumber = GameNumber,
+            Team1 = new TeamData
+            {
+                Name = team1.Name,
+                Score = team1.Score,
+                OrangeBalls = team1.OrangeBalls,
+                PurpleBalls = team1.PurpleBalls
+            },
+            Team2 = new TeamData
+            {
+                Name = team2.Name,
+                Score = team2.Score,
+                OrangeBalls = team2.OrangeBalls,
+                PurpleBalls = team2.PurpleBalls
+            }
+        };
+
+        await MongoDBService.InsertOneAsync(game);
+    }
+
+
+
+    public void Reset(){
+
+    }
+
+    public class Team
+    {
+        public string Name { get; set; }
+        public int Score { get; set; } = 0;
+        public int OrangeBalls { get; set; } = 0;
+        public int PurpleBalls { get; set; } = 0;
+        public string SelectedPenalty { get; set; } = "";
+
+        public Team(string name)
+        {
+            Name = name;
+        }
+
+        public void IncreaseOrangeBalls()
+        {
+            if (OrangeBalls >= 8) return;
+            OrangeBalls++;
+            UpdateScore();
+        }
+
+        public void DecreaseOrangeBalls()
+        {
+            if (OrangeBalls <= 0) return;
+            OrangeBalls--;
+            UpdateScore();
+        }
+
+        public void IncreasePurpleBalls()
+        {
+            if (PurpleBalls >= 4) return;
+            PurpleBalls++;
+            UpdateScore();
+        }
+
+        public void DecreasePurpleBalls()
+        {
+            if (PurpleBalls <= 0) return;
+            PurpleBalls--;
+            UpdateScore();
+        }
+
+        public void OnSelectedOptionChanged(ChangeEventArgs e)
+        {
+            SelectedPenalty = e.Value?.ToString() ?? "";
+            ApplyPenalty();
+            UpdateScore();
+        }
+
+        private int PenaltyPoints { get; set; } = 0;
+
+        private void ApplyPenalty()
+        {
+            switch (SelectedPenalty)
+            {
+                case "Start Position Violation":
+                    PenaltyPoints = -10;
+                    break;
+                case "Robot Touch":
+                    PenaltyPoints = -30;
+                    break;
+                case "Field Damage":
+                    PenaltyPoints = -30;
+                    break;
+                case "Game Interference":
+                    PenaltyPoints = -50;
+                    break;
+                default:
+                    PenaltyPoints = 0;
+                    break;
+            }
+        }
+
+        private void UpdateScore()
+        {
+            Score = (OrangeBalls * 1) + (PurpleBalls * -2) + PenaltyPoints;
+        }
+    }
+
+    Team team1 = new("Team1");
+    Team team2 = new("Team2");
+
+    public App()
+    {
+        team1.Name = "Hello world!!";
+        team1.Score = 0;
+        team1.OrangeBalls = 0;
+        team1.PurpleBalls = 0;
+
+        team2.Name = "Byeworld!!";
+        team2.Score = 0;
+        team2.OrangeBalls = 0;
+        team2.PurpleBalls = 0;
+
+    }
+
+    
+}
